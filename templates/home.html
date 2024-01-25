@@ -10,7 +10,7 @@
 <div class="container">
 
 <div class="intro-banner-wrap">
-	<img src="{% static 'images/banners/3.jpg' %}" class="img-fluid rounded">
+	<img src="{% static 'images/banners/1.jpg' %}" class="img-fluid rounded">
 </div>
 
 </div> <!-- container //  -->
@@ -34,7 +34,7 @@
 			<a href="{{product.get_url}}" class="img-wrap"> <img src="{{ product.images.url }}"> </a> <!-- product image -->
 			<figcaption class="info-wrap">
 				<a href="{{product.get_url}}" class="title">{{product.product_name}}</a> <!-- product name -->
-				<div class="price mt-1">{{product.price}}</div> <!-- product price-// -->
+				<div class="price mt-1">₹ {{product.price}}</div> <!-- product price-// -->
 			</figcaption>
 		</div>
 	</div> <!-- col.// -->
