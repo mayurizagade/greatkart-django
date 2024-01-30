@@ -34,9 +34,9 @@
     <tr>
         <td>
             <figure class="itemside align-items-center">
-                <div class="aside"><img src="{{cart_item.product.images.url}}" class="img-sm"></div>
+                <div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
                 <figcaption class="info">
-                    <a href="{{ cart_item.product.get_url }}" class="title text-dark">{{cart_item.product.product_name}}</a> <!--images-->
+                    <a href="{{ cart_item.product.get_url }}" class="title text-dark">{{ cart_item.product.product_name }}</a> <!--images-->
                     <p class="text-muted small">
                      {% if cart_item.variations.all %}  <!-- cart che purn variations aale pahije -->
                       {% for item in cart_item.variations.all %}  

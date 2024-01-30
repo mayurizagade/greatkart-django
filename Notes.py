@@ -1,5 +1,7 @@
 #                         <<<<<<<<<<<---------- CUSTOM USER MODEL ---------->>>>>>>>>>>
 
+# GIT :- Activate env :- source env/Scripts/activate
+
 # I want Email in admin
 # delete old migrations files 0001 etc
 # delete old database 'db.sqlite3'
@@ -132,7 +134,7 @@
 
 # 6) SETUP GIT AND START CART FUNCTIONALITY :-
 
-# Google :- github.com -- create account in GIT 
+# Google :- github.com -- create account in GIT :- password :- Mayuriz@123
 #                      -- + click on this sign top on right side -- create New Repository -- give name & create
 # Open GITHUB :- git init --> first we have to initialize git repository
 #                git add .
@@ -403,14 +405,163 @@
 #              {% endif %}
 #             </p>
 
+# --------------------------------------------------
+
 # GROUPING CART ITEM VARIATIONS :- cart madhe different color che shirts add kele tr veg vegde add zale pahije ekach yachat nahi
 
 # CARTS APP:- 
 # views.py :- add_cart madhe aapn existing_variation, current_variation, item_id define kru
+
+# --------------------------------------------------
 
 # CART INCREMENT / DECREMENT / REMOVE WITH VARIATIONS :-
 # CARTS APP:- 
 # views.py :- remove_cart, remove_cart_item madhe cart_item_id parameter dil
 # urls.py  :- remove_cart, remove_cart_item madhe cart_item_id uls define kela
 
+# --------------------------------------------------
+
 # PUSH CODE TO GITHUB :-
+# GIT :- git status                                     --- status dakhvte
+#        git add -A                                     --- staging area madhe takte data
+#        git commit -m "store and carts functionality"  --- local repository madhe takte data
+#        git push origin main                           --- main ne push krte
+
+# =====================================================================================================
+
+# 12) REGISTRATION, LOGIN, WITH TOKEN BASED VARIFICATION & MESSAGE ALERT :-
+# SETUP URLS AND DEGIN :-
+
+# GIT :- atom .
+# ACCOUNT APP   :- create file urls.py
+#               :- create register, login, logout url in that file
+# greatkart app :- urls.py :- include accounts urls in that
+# views.py      :- define register, login, logout
+# templates     :- create accounts folder
+#               :- create register.html & login.html
+# navbar.html   :- register and login ch navbar aal pahije mhnun --- <a href="{% url 'login' %}"> & <a href="{% url 'register' %}">
+# forms.py      :- create new file in accounts app 'forms.py'
+#               :- create Modelform in that file
+# register.html :- {{ form.as_p }} --- as_p means as paragraph
+
+# --------------------------------------------------
+
+# IMPLEMENTING MODELFORM AND EDITING __INIT__ :-
+# ACCOUNTS APP :-
+# forms.py     :- in class Registrationform create method password and confirm password
+#              :- define __init__ for 'placeholder' and 'form-control'
+#              :- placeholder :- text displayed in an input field 
+#              :- form-control :- form-control is a CSS class commonly used in frameworks like Bootstrap to style
+#                                 form elements such as input fields, select boxes, and textareas.
+# register.html :- {{ form.password }} & {{ form.confirm_password }}
+
+# --------------------------------------------------
+
+# MAKING VIEW AND EDITING MODELFORM CLEAN METHOD TO CHECK PASSOWRD :-
+# ACCOUNTS APP:- 
+# views.py    :- register function 
+#                 --- when we use django from we have to use cleaned_data to fetch the value from the request
+#                 --- user.phone_number = phone_number --- updating the phone_number attribute of the user object with the value stored in the variable phone_number.
+# forms.py    :- define clean function for password authentications
+# register.html :- {{ form.email.errors }} -- if password chukicha takla tr error dee
+                #  {{ form.non_field_errors }} 
+
+# ----------------------------------------------------------
+
+# DJANGO MESSAGE ALERT 
+# ACCOUNTS APP  :-
+# settings.py   :- from django.contrib.messages import constants as messages
+#                  MESSAGE_TAGS = {messages.ERROR : 'danger',}
+# templates     :- include -- create new file 'alerts.html'
+# alerts.html   :- write code for messages
+# register.html :- {% include 'includes/alerts.html' %}
+# views.py      :- messages.success(request, "Registration Sucessful...!")
+#                  return redirect('register')
+# static folder :- js -- scripts.js -- setTimeout(function(){$('#message').fadeOut('slow')}, 4000) 
+#                                   -- register zalyavr kitived successful vala msg dakhvaych aahe, 4000 means 4 sec
+
+# -------------------------------------------------------------
+
+# LOGIN FUNCTIONALITY  
+# ACCOUNTS APP:- 
+
+# views.py    :- define login and logout
+# login.html  :- write code on login.html
+# navbar.html :- {% if user.id is None %} --- else login, register, logout all url -- endif
+
+# ===========================================================================================================
+
+# 13) USER ACCOUNT ACTIVATION AND ACTIVATION LINK EXPIRY 
+
+# A] ENCODE USER PRIMARY KEY & SEND TOKEN BASED ACTIVATION LINK :-
+
+# ACCOUNTS APP :-
+# views.py     :- create User Activation methods
+# templates    :- accounts -- create new file account_verification_email.html
+# account_verification_email.html :- autoescape off and endautoescape new concepts coming in this html page
+# Greatkart    :- settings.py :-  EMAIL_HOST = 'smtp.gmail.com'
+#                                 EMAIL_PORT = 587
+#                                 EMAIL_HOST_USER = 'mayurizagade18@gmail.com'
+#                                 EMAIL_HOST_PASSWORD = 'zspv iinl sswi fhay'
+#                                 EMAIL_USE_TLS = True
+
+# EMAIL_HOST_PASSWORD KSA CREATE KELA ?
+# mayurizagade@gmail.com cha google vr geli --- Security -- 2 Step Verification on kel
+#                                           --- App Password sgdyat khali asto tyavr click kele 
+#                                           --- tithe name dil app la aani dummy passowrd aala zspv iinl sswi fhay
+
+# ----------------------------------------------------------------
+
+# B] DECODE USER PRIMARY KEY & ACTIVATE THE USER | EXPIRE LINK :-
+
+# ACCOUNTS APP :-
+# urls.py      :- make url for activate
+# views.py     :- define activate
+# login.html   :- {% if request.GET.command == 'verification' %} etc 
+# Web          :- new account register kr to create hoil mg tula mail yeil gmailvr(mayurizagade18@gmail.com) aani 
+#                 tu tya mail vr click kele tr to jo account tu create kela to activate hoil aani nntr tu login 
+#                 kru sksil tr Ecommerce website open hoil
+
+# ----------------------------------------------------------------
+
+# C] DASHBOARD 
+# Dashboard means Tracking the Order vala Board means kuthe order aahe address kay etc aste te
+# ACCOUNT APP :-
+# urls.py     :- create url of dashboard
+# views.py    :- define dashboard
+# navbar.html :- <a href="{% url 'dashboard' %}">Dashboard</a> <span class="dark-transp"> | </span>
+# templates   :- accounts -- create file 'dashboard.html'
+# dashboard.html :- copy code from greatkart.html(rathankumar) --- {% include 'includes/alerts.html' %} 
+#                   aani logout vr click kelyavr logout zal pahije so {% url 'logout' %} 
+
+# ===========================================================================================================
+
+# 14) FORGOT PASSWORD WITH SECUREVALIDATION LINKS 
+
+# A] FORGOT PASSOWRD 
+# ACCOUNT APP:-
+# urls.py    :- create url of forgotPassword
+# views.py   :- define forgotPassword
+# html       :- templates -- accounts -- create file 'forgotPassword.html'
+# forgotPassword.html :- {% include 'includes/alerts.html' %}
+#                        <form action="{% url 'forgotPassword' %}" method="POST">
+#                          {% csrf_token %}
+
+# email dilyavr mail vr msg yeil tithun reset kru password tr html page create krav lagel
+# html :- templates  :- accounts -- create file 'reset_password_email.html'
+# reset_password_email.html :- http://{{domain}}{% url 'resetpassword_validate' uidb64=uid token=token %}
+# urls.py    :- resetpassword_validate cha url
+# views.py   :- define resetpassword_validate
+
+# ----------------------------------------------------------------
+
+# B] RESET PASSWORD
+# ACCOUNT APP :-
+# url.py      :- resetPassword
+# views.py    :- define resetPassword
+# html        :- templates -- accounts -- create new file "resetPassword.html"
+
+# ----------------------------------------------------------------
+
+# C] PUSH VODE TO GITHUB
+# GIT :- git status

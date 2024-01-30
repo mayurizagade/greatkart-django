@@ -15,40 +15,25 @@ def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)  # get product
     product_variation = []          # --- WE ARE GETTING PRODUCT VARIATION ---
     if request.method == 'POST':
-        for item in request.POST :
-            key   = item                # if color is black then color is stored inside the key
-            value = request.POST[key]   # and black is stored inside the value
-
+        for item in request.POST:
+            key = item
+            value = request.POST[key]
             try:
-                variation = Variation.objects.get(variation_category__iexact=key, variation_value__iexact=value)
-                product_variation.append(variation)  # now we can store this product in cart item
+                variation = Variation.objects.get(product=product, variation_category__iexact=key, variation_value__iexact=value)
+                product_variation.append(variation)
             except:
                 pass
 
-    try:        # --- WE ARE GETTING THE CART HERE ---
-        cart = Cart.objects.get(cart_id=_cart_id(request))  # get cart using the cart_id present in the session
-    except Cart.DoesNotExist:
-        cart = Cart.objects.create(cart_id=_cart_id(request)) # if cart_id nsel tr create kr
-    cart.save()
 
-
-     # --- WE ARE GETTING THE CARTITEM HERE ---
-    is_cart_item_exists = CartItem.objects.filter(product=product, cart=cart).exists()
-    if is_cart_item_exists: 
-        cart_item = CartItem.objects.filter(product=product, cart=cart) # return cartitem objects
-
-        # existing_variations --> comming from database
-        # current_variation   --> getting product_variation
-        # item_id             --> comming from database
-        # if the current_variations is inside the existing_variation then we have going to increasing cartitem
-        # mhnje jr cart madhe punha toch product add kela tr increase zala pahije tyachatch 
+    is_cart_item_exists = CartItem.objects.filter(product=product).exists()
+    if is_cart_item_exists:
+        cart_item = CartItem.objects.filter(product=product)
         ex_var_list = []
         id = []
         for item in cart_item:
             existing_variation = item.variations.all()
-            ex_var_list.append(existing_variation)
+            ex_var_list.append(list(existing_variation))
             id.append(item.id)
-        print(ex_var_list)
 
         if product_variation in ex_var_list:
             # increase the cart item quantity
@@ -59,10 +44,17 @@ def add_cart(request, product_id):
             item.save()
 
         else:
-            item = CartItem.objects.create(product=product, quantity=1, cart=cart)
+            item = CartItem.objects.create(product=product, quantity=1)
             if len(product_variation) > 0:
                 item.variations.clear()
                 item.variations.add(*product_variation)
+                item.save()
+
+            else:
+                item = CartItem.objects.create(product=product, quantity=1, cart=cart)
+                if len(product_variation) > 0:
+                    item.variations.clear()
+                    item.variations.add(*product_variation)
             # cart_item.quantity += 1  # cart_item.quantity = cart_item.quantity + 1 -- means increament hot rahil click kele tr
             item.save()
     else :   # else cart_item exist nsel krt tr new create kr
@@ -87,8 +79,8 @@ def cart(request, total=0, quantity=0, cart_items=None):
         cart_items    = CartItem.objects.filter(cart=cart, is_active=True)
         for cart_item in cart_items:
             total    += (cart_item.product.price * cart_item.quantity)  # price * quantity
-            quantity += cart_item.quantity                           # quantity + quantity
-        tax = (2 * total)/100       # tax kiti lavaycha aahe te
+            quantity += cart_item.quantity                              # quantity + quantity
+        tax = (2 * total)/100         # tax kiti lavaycha aahe te
         grand_total   = total + tax   # total paise + tax = all total
     except ObjectDoesNotExist :
         pass  # just ignore
