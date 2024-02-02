@@ -565,3 +565,72 @@
 
 # C] PUSH VODE TO GITHUB
 # GIT :- git status
+#        git add -A
+#        git commit -m "django authentication"
+#        git push origin main
+
+# ===========================================================================================================
+
+# 15) CART CHECKOUT, AUTOMATICALLY ASSIGN THE CART ITEMS TO LOGGED-IN USER
+
+# A] CHECKOUT PAGE DESIGN 
+# CARTS APP :-
+# urls.py   :- create checkout url
+# views.py  :- define checkout function
+# html      :- templates/store/checkout.html -- new html file created checkout.html
+# checkout.html :- cart.html cha purn page ethe copy kraycha ahe
+
+# ----------------------------------------------------------------
+
+# B] ASSIGN THE USER TO CART ITEM
+# CARTS APP :- 
+# models.py :- user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
+# views.py  :- ACCOUNT APP -- In login we are assiging user to cart item
+
+# ----------------------------------------------------------------
+
+# C] UPDATE CART COUNTER AND CART VIEW FOR LOGGED IN USER 
+# CARTS APP :- 
+# context_processor :- if request.user.is_authenticated: etccc
+# views.py          :- cart -- if request.user.is_authenticated:
+
+# ----------------------------------------------------------------
+
+# D] VARIATION GROUPING FOR LOGGEDIN USERS PART1
+# -- agr aapn logout asel aani product add kela to login kelyavr add hot aahe pn login krun aapn product 
+#    add kela tr toch same product grouping nhi krt aahe tr ha issue ethe solve kela
+# CARTS APP :
+# views.py  :- if current_user.is_authenticated: aani else madhe same copy paste
+
+# ----------------------------------------------------------------
+
+# E] VARIATION GROUPING FOR LOGGEDIN USERS PART2
+# ACCOUNTS APP :-
+# views.py :- login madhe codes lihile cart madhe add zale pahije mhnun
+#            -- GETTING THE PRODUCT VARIATION BY CART ID
+#            -- GET THE CART ITEMS FROM THE USERS TO ACCESS HIS PRODUCT VARIATIONS
+#            -- GET COMMON PRODUCT VARIATION INSIDE LIST
+
+# ----------------------------------------------------------------
+
+# F] FIX REMOVE AND DECREMENT BUTTON  
+# CARTS APP :
+# views.py  :- remove_cart madhe codes lihile -- if request.user.is_authenticated: -- aapm "-" vr click kele tr -1 zal paihje
+#           :- remove_cart_item madhe same tsch -- remove vr click kele tr item cart madhun remove zala pahije  
+
+# ----------------------------------------------------------------
+
+# G] DYNAMICALLY REDIRECT THE USER TO NEXT PAGE
+# if aapn logout asel aani aapn kuthe click kele tr tyane aaplyala login kelyavr tyach page vr nel pahije
+# GIT :- pip install requests
+#        py manage.py runserver
+# ACCOUNT APP :
+# views.py    :- login madhe --- params = dict(x.split("=")for x in query.split("&"))
+# CARTS APP :-
+# views.py :- checkout madhe -- if request.user.is_authenticated: try and except block
+
+# ===========================================================================================================
+
+# 16) ORDER AND ORDER NUMBER GENERATION 
+# 
+

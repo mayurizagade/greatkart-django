@@ -4,6 +4,9 @@ from .forms import RegistrationForm
 from .models import Account
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
+from carts.models import Cart, CartItem
+from carts.views import _cart_id
+import requests
 
 # VERIFICATION EMAIL 
 from django.contrib.sites.shortcuts import get_current_site
@@ -54,9 +57,62 @@ def login(request):
         password = request.POST['password']
         user = auth.authenticate(email=email, password=password)
         if user is not None:   # if we have user
+            try:    # cartitem madhe kahi add kele tr logout kelyavr te gel nahi pahije
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if is_cart_item_exists:
+                    cart_item = CartItem.objects.filter(cart=cart)
+
+                    # <<-- GETTING THE PRODUCT VARIATION BY CART ID -->> 
+                    product_variation = []
+                    for item in cart_item:
+                        variation = item.variations.all()
+                        product_variation.append(list(variation))  # productvariation madhe variation list takt aaho
+                                                # list madhe convert kele bcoz to already queryset madhe aahe
+                        
+                    # <<-- GET THE CART ITEMS FROM THE USERS TO ACCESS HIS PRODUCT VARIATIONS -->>
+                    cart_item = CartItem.objects.filter(user=user)  # product exsits krte tr add kr tyala tyachatch
+                    ex_var_list = []  # we getting existing variations list from the database
+                    id = []           # id of that perticular item
+                    for item in cart_item:
+                        existing_variation = item.variations.all()
+                        ex_var_list.append(list(existing_variation))
+                        id.append(item.id)
+
+                    # <<-- GET COMMON PRODUCT VARIATION INSIDE LIST -->>
+                    # product_variation = [1, 2, 3, 4, 6]
+                    # ex_var_list = [4, 6, 3, 5]  -- hya don madhe 4,6 commomn aahe tr he dogh ekatch aale pahije
+                    
+                    for pr in product_variation:
+                        if pr in ex_var_list:
+                            index   = ex_var_list.index(pr)
+                            item_id = id[index]                        # id madhe aapn index takla 
+                            item    = CartItem.objects.get(id=item_id) # getting cartitem id
+                            item.quantity += 1                         # increasing quantity "+" vr click kele tr
+                            item.user = user                           # assign current user to cart item
+                            item.save()
+                        else:
+                            cart_item = CartItem.objects.filter(cart=cart)
+                            for item in cart_item:  
+                                item.user = user
+                                item.save()  # assiging user to cart item
+            except:
+                pass
             auth.login(request, user)
             messages.success(request, 'You Are Now Logged In')
-            return redirect("dashboard")
+            url = request.META.get("HTTP_REFERER") # Previous url vr neun fekel
+            try:
+                query = requests.utils.urlparse(url).query
+                # print('query -->', query)    # query --> next=/cart/checkout/
+                # next=/cart/checkout/   --- next is key and cart/checkout is value
+                params = dict(x.split("=")for x in query.split("&")) # x.split is spliting "=" value and convert in dict
+                # print("params -->", params)   # params --> {'next': '/cart/checkout/'}
+                if "next" in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)
+            except:
+                return redirect("dashboard")
+            
         else:
             messages.error(request, "Invalid Login Credentials...!") # credentials chukle tr error de
             return redirect('login')                                 # aani punha login page vr pathv
