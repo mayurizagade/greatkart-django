@@ -632,5 +632,94 @@
 # ===========================================================================================================
 
 # 16) ORDER AND ORDER NUMBER GENERATION 
-# 
+# A] ORDER FLOW EXPLAINED 
+#    Purn order flow explained kela ki aadhi order gheu mg to place order madhe jail tyat naw, gav,ptta aste
+#    nntr order decrease or increase krte, email send hote, contact number, size, color etc
+#    We have to create new app(orders), models, views, html etc for orders
+#    We create 3 models Payment, Orders, Order Product
 
+# GIT :- git status
+#        git add -A
+#        git commit -m "handled cart and checkout page for the logged in users"
+#        git push origin main
+
+# ----------------------------------------------------------------
+
+# B] ORDER ORDERPRODUCT PAYMENT MODELS 
+# GIT         :- py manage.py startapp orders -- APP CREATED
+# settings.py :- register that app in installed app 'orders'
+
+# ORDERS APP :
+# models.py  :- create Payment, Order, OrderProduct models
+# admin.py   :- register Payment, Order, OrderProduct
+# GIT        :- makemigrations and migrate
+
+# ----------------------------------------------------------------
+
+# C] PLACE ORDER VIEW GENERATE ORDER NUMBER PART 1
+# Greatkart urls :- include orders url 
+
+# ORDERS APP :
+# urls.py   :- In orders app create urls.py file
+#              create url of place_order
+# views.py  :- create place_order function
+# forms.py  :- create forms.py file in orders app
+#              create class OrderForm (forms)
+
+# ----------------------------------------------------------------
+
+# D] PLACE ORDER VIEW GENERATE ORDER NUMBER PART 2
+
+# ORDER APP : 
+# views.py  :- place_order madhe order number generate kel
+# checkout.html :- <form action="{% url 'place_order' %}" method="POST">
+# WEB       :- Nav, email etc takl aani place order kel tr aapla order admin madhe register hoil
+
+# ----------------------------------------------------------------
+
+# E] REVIEW ORDER PAGE SETUP 
+# ORDER APP :
+# urls.py :- create urls of payments
+# view.py :- create payments function
+# templates :- create order folder
+#              in that folder create payments.html file
+# payments.html :- copy cart.html code 
+#                  Billing Address, Payments Method, Review etc
+
+# ----------------------------------------------------------------
+
+# F] REVIEW ORDER PAYMENT PAGE 
+# ORDER APP :
+# models.py :- define full_name, full_address
+# payment.html :- <p class="card-text mb-0">{{order.full_name}}</p> etccc table vgere add kela
+#                  mhnje billing madhe sgd disl pahije 
+
+# ===========================================================================================================
+
+# 17) PAYMENT GATEWAY INTEGRATIONS AND PLACE ORDER 
+
+# A] CREATE PAYPAL BUSINES ACCOUNT
+# mayurizagade18@gmail.com --- Pass@123
+# yat sandbox account bnv means dummy account
+# We want 2 account :- Personal :- greatkart.personalproject@gmail.com --- Pass@123
+#                      Business :- greatkart.businessp2@gmail.com      --- Pass@123
+
+# ----------------------------------------------------------------
+
+# B] PAYPAL GATEWAY INTEGRATIONS 
+# Paypal login krun personal and business account bnv
+# payment.html :- PAYPAL BUTTON WILL LOAD pasun paypal ch details
+# base.html :-  scipts add kele paypal che etc
+# aapn payment kru tr paypal chi mail and password taka lagel nntr payment hoil
+# Personal :- greatkart.personalproject@gmail.com --- Pass@123
+# https://www.sandbox.paypal.com/myaccount/summary -- yat open kru tr transaction desil kiti paise baki aahe te pn
+
+# ----------------------------------------------------------------
+
+# C] SEND TRANSACTION DETAILS TO VIEW FINAL
+# views.html :- payments madhe code lihile admin madhe gele pahije order
+# payment.html :- code for transaction details
+
+# ===========================================================================================================
+
+# 18) AFTER ORDER FUNCTIONALITIES 
