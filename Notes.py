@@ -508,7 +508,7 @@
 # EMAIL_HOST_PASSWORD KSA CREATE KELA ?
 # mayurizagade@gmail.com cha google vr geli --- Security -- 2 Step Verification on kel
 #                                           --- App Password sgdyat khali asto tyavr click kele 
-#                                           --- tithe name dil app la aani dummy passowrd aala zspv iinl sswi fhay
+#                                           --- tithe name dil app la aani dummy passowrd aala 'zspv iinl sswi fhay'
 
 # ----------------------------------------------------------------
 
@@ -717,9 +717,74 @@
 # ----------------------------------------------------------------
 
 # C] SEND TRANSACTION DETAILS TO VIEW FINAL
+# ORDER APP :
 # views.html :- payments madhe code lihile admin madhe gele pahije order
 # payment.html :- code for transaction details
 
 # ===========================================================================================================
 
 # 18) AFTER ORDER FUNCTIONALITIES 
+
+# A] MOVE CART ITEMS TO ORDERPRODUCT TABLE 
+# ORDER APP :
+# views.py :- cart_items = CartItem.objects.filter(user=request.user) pasunch
+# admin.py :- create class OrderProductInline for tabularinline 
+#             table aala pahije admin madhe je pn product order kele tyacha
+# WEB admin madhe OrderProduct vr click kelyavr table disel
+
+# ----------------------------------------------------------------
+
+# B] SET VARIATIONS TO ORDER PRODUCT
+# ORDER APP :
+# WEB admin -- OrderProduct madhe jo table aahe tyat variations la set kraych aahe
+# views.py :- cart_item = CartItem.objects.get(id=item.id) etc
+# variations admin page chya orderproduct madhe vr selected zale
+
+# ----------------------------------------------------------------
+
+# C] REDUCE QUANTITY OF SOLD PRODUCTS AND CLEAR CART
+# ORDER APP :
+# views.py :- product.stock -= item.quantity  ---- 100-2 = 98 Jeans rahil stock madhe
+#             clear cart --- CartItem.objects.filter(user=request.user).delete()
+#             ekda order zal ki cart clear zala pahije -- home page vr neil mg to
+
+# ----------------------------------------------------------------
+
+# D] SEND ORDERD RECIEVED EMAIL 
+# views.py                  :- mail_subject = 'Thank You For Your Order...!' pasunchh
+# html                      :- templates/orders/order_recieved_email.html 
+# order_recieved_email.html :- {% autoescape off %} codes {% endautoescape %}
+
+# jevva tu order krsil tr gmail vr msg, order number yeil -- for buyers
+# web admin madhe to ordder number takla tr order diste konta aahe tr -- for developers
+
+# ----------------------------------------------------------------
+
+# E] REDIRECT USER TO ORDER COMPLETE PAGE 
+# ORDER APP :
+# urls.py             :- create order_complete url
+# views.py            :- define order_complete function
+# html                :- templates/orders/order_complete.html
+# order_complete.html :- {% extends 'base.html' %} etc --- copy from rathnk sir html
+# payments.html :-  window.location.href = redirect_url + '?order_number='+data.order_number+'&payment_id='+data.transID;
+#                   ha url aahe jo search bar vr disel with order_number
+# views.py      :- data = {
+#                'order_number' : order.order_number,  # order_number -- pyaments.html madhe order_number
+#                'transID'      : payment.payment_id,  #                 dila aahe to mg web search bar vr disel
+
+# ----------------------------------------------------------------
+
+# F] ORDER COMPLETION INVOICE 
+# PAYMENT SUCCESSFULL vala page
+# ORDER APP :
+# views.py  :- function order_complete madhe try and except block create kela
+#              tyat total, product, id etc sgdch dil je payment successfull zalyavr disayla pahije html page through
+# order_complete.html :- line 33 pasun purn {{order.full_name}} ase vale vael add kele payment valya pagevr disayla
+
+# ----------------------------------------------------------------
+
+# G] GIT PUSH 
+# GIT :- git status
+#        git add -A
+#        git commit -m "product order and payments"
+#        git push origin main

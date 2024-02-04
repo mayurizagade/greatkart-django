@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from carts.models import Cart, CartItem
 from .forms import OrderForm
-from .models import Order, Payment
+from .models import Order, Payment, OrderProduct
 import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import json
+from store.models import Product
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+
 
 
 def payments(request):
@@ -13,17 +17,62 @@ def payments(request):
 
     # Store transaction details inside payment mode
     payment = Payment(
-        user = request.user,
-        payment_id = body['transID'],
+        user           = request.user,
+        payment_id     = body['transID'],
         payment_method = body['payment_method'],
-        amount_paid = order.order_total,
-        status = body['status'],
+        amount_paid    = order.order_total,
+        status         = body['status'],
     )
     payment.save()
-    order.payment = payment  # inside order model we have payment so this is the order.payment object
-    order.is_ordered = True  # means this order is successfull
+    order.payment    = payment  # inside order model we have payment so this is the order.payment object
+    order.is_ordered = True     # means this order is successfull
     order.save()
-    return render(request, 'orders/payments.html')
+
+    # Move the cart items to order product table
+    cart_items = CartItem.objects.filter(user=request.user)
+    for item in cart_items:
+        orderproduct = OrderProduct()                   # orderproduct cha object
+        orderproduct.order_id      = order.id           # order id hvi
+        orderproduct.payment       = payment            # payment hv
+        orderproduct.user_id       = request.user.id    # user id hvi
+        orderproduct.product_id    = item.product_id    # product id
+        orderproduct.quantity      = item.quantity      # quantity hv
+        orderproduct.product_price = item.product.price # product chi price
+        orderproduct.ordered       = True               # payment is successfull
+        orderproduct.save()
+
+        # variations admin page chya orderproduct madhe vr selected asle pahije
+        cart_item         = CartItem.objects.get(id=item.id) # we want to take the variations of perticular id
+        product_variation = cart_item.variations.all()
+        orderproduct      = OrderProduct.objects.get(id=orderproduct.id)  # orderproduct chi id
+        orderproduct.variations.set(product_variation)
+        orderproduct.save()
+
+    # Reduce the quantity of the sold products
+        product = Product.objects.get(id=item.product_id) # product
+        product.stock -= item.quantity                    # 100-2 = 98 Jeans rahil stock madhe
+        product.save()
+
+    # Clear cart
+    CartItem.objects.filter(user=request.user).delete()
+
+    # Send order recieved email to customer
+    mail_subject = 'Thank You For Your Order...!'
+    message      = render_to_string('orders/order_recieved_email.html', {
+        'user'  : request.user, 
+        'order' : order 
+        })
+    to_email     = request.user.email
+    send_email   = EmailMessage(mail_subject, message, to=[to_email])
+    send_email.send()
+
+    # Send order number and transaction id back to sendData method via JsonResponse
+
+    data = {
+        'order_number' : order.order_number,  # pyaments.html madhlya concole.log('Success :', data) madhla data
+        'transID'      : payment.payment_id,  #  jo aahe n tyat ordernumber ani transID yeil
+    }
+    return JsonResponse(data)
 
 
 def place_order(request, total=0, quantity=0,):
@@ -76,10 +125,10 @@ def place_order(request, total=0, quantity=0,):
 
             order = Order.objects.get(user=current_user, is_ordered=False, order_number=order_number)
             context = {
-                'order' : order,
-                'cart_items' : cart_items,
-                'total' : total,
-                'tax' : tax,
+                'order'       : order,
+                'cart_items'  : cart_items,
+                'total'       : total,
+                'tax'         : tax,
                 'grand_total' : grand_total,
             }
             return render(request, 'orders/payments.html', context)
@@ -87,5 +136,31 @@ def place_order(request, total=0, quantity=0,):
     else:
         return redirect('checkout')
 
+# HE SGD PAYMENT SUCCESSFULL VALYA PAGE SATHI
+def order_complete(request):
+    order_number = request.GET.get('order_number')
+    transID      = request.GET.get('payment_id')
 
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True) # order number aala pahije pagevr
+        ordered_products = OrderProduct.objects.filter(order_id=order.id)
 
+        subtotal = 0
+        for i in ordered_products:
+            subtotal += i.product_price * i.quantity  # 10*2=20 asa hoil subtotal
+
+        payment = Payment.objects.get(payment_id=transID)  # payment id aali pahije payment successfull valya pagevr
+
+        context = {                                     # ha purn context order_complete.html sathi aahe
+            'order'            : order,                 # order number yeil payment successfull valya page vr 
+            'ordered_products' : ordered_products, 
+            'order_number'     : order.order_number,
+            'transID'          : payment.payment_id,    # id deil
+            'payment'          : payment,               # payment status dakhvel : COMPLETED
+            'subtotal'         : subtotal,              # purn total 
+        }
+
+        return render(request, 'orders/order_complete.html', context)
+    
+    except(Payment.DoesNotExist, Order.DoesNotExist):
+        return redirect('home')  # wrong payment_id & order_number takla tr home vr pathvel
