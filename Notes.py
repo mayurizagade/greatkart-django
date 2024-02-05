@@ -788,3 +788,97 @@
 #        git add -A
 #        git commit -m "product order and payments"
 #        git push origin main
+
+# ===========================================================================================================
+
+# 19) REVIEW AND RATING SYSYTEM 
+
+# A] REVIEW AND RATING MODEL 
+# STORE APP:
+# models.py :- create new model ReviewRating
+# admin.py  :- register ReviewRating
+# Git       :- makemigrations and migrate then runserver
+
+# ----------------------------------------------------------------
+
+# B] MAKING RATING STARS PART1
+# STORE APP:
+# forms.py :- in store app create new fie 'forms.py'
+#             class ReviewForm created
+# product_detail.html :- Review val section
+# greatkart :- static/css/custom.css
+# base.html :- <link href="{% static 'css/custom.css' %}" rel="stylesheet" type="text/css"/>
+
+# ----------------------------------------------------------------
+
+# C] RATING MAKING STARS CSS PART2
+# GREATKART:
+# custom.css : codes lihile stars asayla hve click kelyavr yellow color aala pahije etc
+
+# ----------------------------------------------------------------
+
+# D] STORE THE REVIEW
+# STORE APP :
+# urls.py :- submit_review
+# views.py :- define submit_review function
+# product_detail.html :- {% if user.is_authenticated %} asel tr review deu skto jr user login nsel tr tyala login page vr pathv
+
+# ===========================================================================================================
+
+# 20) TWO FACTORS CHECK FOR SUBMITTING REVIEW
+
+# A] CHECK IF USER PURCHAED PRODUCT BEFORE SUBMIT REVIEW
+# STORE APP :
+# views.py  :- product_detail madhe jr product purches kela trch review deta yeil
+#               {% if orderproduct %} pasun 
+
+# ----------------------------------------------------------------
+
+# B] DISPLAY RATING STARS 
+# STORE APP:
+# views.py :- product_detail madhe review single product che deta aale pahije ae dile
+# product_detail.html :- {% for review in reviews %} pasun purn review bddl
+# custom.css :- .rating-star i{color : #ffb503 !important;} --- rating yellow color chi disli pahije
+# http://127.0.0.1:8000/store/category/jeans/atx-jeans/
+
+# ===========================================================================================================
+
+# 21) RATING AND REVIEW AVERAGE CALCULATION
+
+# A] RATING AVERAGE CALCULATION
+# STORE APP :
+# models.py :- define averageReview
+# product_detail.html :- {{single_product.averageReview}}
+
+# ----------------------------------------------------------------
+
+# B] RATING AVERAGE STAR AND REVIEW COUNTER
+# product_detail.html :- Customer REviews madhe                
+#                        <i class="fa fa-star{% if single_product.averageReview < 0.5 %}-o{% elif single_product.averageReview >= 0.5 and single_product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+#                        aani sgdyat vrti pn star disle pahije mhnun line 27 la pn copy paste kel
+
+# STORE APP :
+# models.py :- define countReview function for counting the review
+# product_detail.html :- <span>{{single_product.countReview}} reviews</span> jithe review count dakhvaycha aahe tithe
+
+# ----------------------------------------------------------------
+
+# C] ANONYMOUS USER ERROR FIX
+# STORE APP :
+# views.py :- product_detail madhe jr login asel tr review deta yeil aani product gheta yeil
+#             if request.user.is_authenticated: etc
+#             else: orderproduct = None
+
+# ----------------------------------------------------------------
+
+# D] PUSH CODE TO GITHUB
+# GIT :- git status
+#        git add -A
+#        git commit -m "product order and payments"
+#        git push origin main
+
+# ===========================================================================================================
+
+# 22) REVIEW AND RATING SYSYTEM 
+
+# A] 
